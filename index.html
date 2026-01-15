@@ -3,40 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Tasks and Hobbies</title>
-    <link rel="stylesheet" href="style.css">
+    <title>To-Do List</title>
 </head>
 <body>
 
-    <header>
-        <h1>My Structured Lists Demo</h1>
-    </header>
-    <hr>
-    <section>
-        <h2>Daily Tasks (Ordered List)</h2>        
-        <ol>
-            <li>Wake up and have breakfast.</li>
-            <li>Going to college.</li>
-            <li>Attending the classes.</li>
-            <li>Take a 30-minute walk or workout after classes.</li>
-            <li>Have dinner and plan for the next day.</li>
-            <li>Play some games.</li>
-            <li>Do some study and then sleep.</li>
-        </ol>
-    </section>
-    <hr>
-    <section>
-        <h2>Hobbies and Interests (Unordered List)</h2>
-        <ul>
-            <li>Landscape Photography</li>
-            <li>Cinematography</li>
-            <li>Playing Badminton</li>
-            <li>Playing the acoustic guitar </li>
-            <li>Swimming</li>
-            <li>Listening to music</li>
+    <h2>To-Do List</h2>
+
+    <div class="input-group">
+        <input type="text" id="taskInput" placeholder="Enter a new task...">
+        <button onclick="addTask()">Add</button>
+    </div>
+
+    <ul id="taskList">
         </ul>
-    </section>
+
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('myTasks')) || []
+        function renderTasks() {
+            const listElement = document.getElementById('taskList')
+            listElement.innerHTML = ''
+            tasks.forEach((task, index) => {
+                const li = document.createElement('li')
+                li.innerHTML = `
+                    <span class="${task.completed ? 'completed-text' : ''}">${task.text}</span>
+                    <div class="btn-group">
+                        <button class="done-btn" onclick="toggleComplete(${index})">
+                            ${task.completed ? 'Undo' : 'Done'}
+                        </button>
+                        <button class="delete-btn" onclick="deleteTask(${index})">Delete</button>
+                    </div>
+                `;
+                listElement.appendChild(li);
+            });
+        }
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const text = input.value.trim();
+            if (text !== "") {
+                tasks.push({
+                    text: text,
+                    completed: false
+                })
+                input.value = ""
+                saveAndRender()
+            }
+        }
+        function deleteTask(index) {
+            tasks.splice(index, 1)
+            saveAndRender()
+        }
+        function toggleComplete(index) {
+            tasks[index].completed = !tasks[index].completed;
+            saveAndRender()
+        }
+        function saveAndRender() {
+            localStorage.setItem('myTasks', JSON.stringify(tasks));
+            renderTasks()
+        }
+        renderTasks()
+    </script>
 </body>
 </html>
-
-
